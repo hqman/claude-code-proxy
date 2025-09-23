@@ -8,6 +8,7 @@ import {
   FileText,
   X,
   ChevronRight,
+  ChevronLeft,
   ChevronDown,
   Inbox,
   Wrench,
@@ -355,6 +356,37 @@ export default function Index() {
     setSelectedRequest(null);
   };
 
+  const getCurrentRequestIndex = () => {
+    if (!selectedRequest) return -1;
+    return filteredRequests.findIndex(r => r.id === selectedRequest.id);
+  };
+
+  const navigateToPreviousRequest = () => {
+    const currentIndex = getCurrentRequestIndex();
+    if (currentIndex > 0) {
+      const previousRequest = filteredRequests[currentIndex - 1];
+      setSelectedRequest(previousRequest);
+    }
+  };
+
+  const navigateToNextRequest = () => {
+    const currentIndex = getCurrentRequestIndex();
+    if (currentIndex < filteredRequests.length - 1) {
+      const nextRequest = filteredRequests[currentIndex + 1];
+      setSelectedRequest(nextRequest);
+    }
+  };
+
+  const hasPreviousRequest = () => {
+    const currentIndex = getCurrentRequestIndex();
+    return currentIndex > 0;
+  };
+
+  const hasNextRequest = () => {
+    const currentIndex = getCurrentRequestIndex();
+    return currentIndex >= 0 && currentIndex < filteredRequests.length - 1;
+  };
+
   const getToolStats = () => {
     let toolDefinitions = 0;
     let toolCalls = 0;
@@ -476,6 +508,8 @@ export default function Index() {
     }
   };
 
+  const filteredRequests = filterRequests(filter);
+
   useEffect(() => {
     if (viewMode === 'requests') {
       loadRequests(modelFilter);
@@ -484,9 +518,10 @@ export default function Index() {
     }
   }, [viewMode, modelFilter]);
 
-  // Handle escape key to close modals
+  // Handle keyboard navigation for modals
   useEffect(() => {
-    const handleEscapeKey = (event: KeyboardEvent) => {
+    const handleKeyboardNavigation = (event: KeyboardEvent) => {
+      // Handle Escape key
       if (event.key === 'Escape') {
         if (isModalOpen) {
           closeModal();
@@ -495,16 +530,25 @@ export default function Index() {
           setSelectedConversation(null);
         }
       }
+
+      // Handle arrow keys for request navigation (only when request modal is open)
+      if (isModalOpen && selectedRequest) {
+        if (event.key === 'ArrowLeft' && hasPreviousRequest()) {
+          event.preventDefault();
+          navigateToPreviousRequest();
+        } else if (event.key === 'ArrowRight' && hasNextRequest()) {
+          event.preventDefault();
+          navigateToNextRequest();
+        }
+      }
     };
 
-    window.addEventListener('keydown', handleEscapeKey);
-    
+    window.addEventListener('keydown', handleKeyboardNavigation);
+
     return () => {
-      window.removeEventListener('keydown', handleEscapeKey);
+      window.removeEventListener('keydown', handleKeyboardNavigation);
     };
-  }, [isModalOpen, isConversationModalOpen]);
-
-  const filteredRequests = filterRequests(filter);
+  }, [isModalOpen, isConversationModalOpen, selectedRequest, filteredRequests]);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -836,20 +880,43 @@ export default function Index() {
 
       {/* Request Detail Modal */}
       {isModalOpen && selectedRequest && (
-        <div className="fixed inset-0 bg-gray-900/70 backdrop-blur-sm z-50 flex items-center justify-center p-6">
-          <div className="bg-white rounded-xl max-w-6xl w-full max-h-[90vh] overflow-hidden shadow-2xl">
+        <div className="fixed inset-0 bg-gray-900/70 backdrop-blur-sm z-50 flex items-center justify-center p-6" onClick={closeModal}>
+          <div className="bg-white rounded-xl max-w-6xl w-full max-h-[90vh] overflow-hidden shadow-2xl" onClick={(e) => e.stopPropagation()}>
             <div className="bg-gray-50 px-6 py-4 border-b border-gray-200">
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-3">
                   <FileText className="w-5 h-5 text-blue-600" />
                   <h3 className="text-lg font-semibold text-gray-900">Request Details</h3>
                 </div>
-                <button 
-                  onClick={closeModal}
-                  className="text-gray-400 hover:text-gray-600 transition-colors p-2 hover:bg-gray-100 rounded-lg"
-                >
-                  <X className="w-5 h-5" />
-                </button>
+                <div className="flex items-center space-x-2">
+                  <span className="text-sm text-gray-500 mr-2">
+                    {getCurrentRequestIndex() + 1} of {filteredRequests.length}
+                  </span>
+                  <button
+                    onClick={navigateToPreviousRequest}
+                    disabled={!hasPreviousRequest()}
+                    className="text-gray-600 hover:text-gray-800 transition-colors p-2 hover:bg-gray-100 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-transparent"
+                    title="Previous request (Left arrow)"
+                  >
+                    <ChevronLeft className="w-5 h-5" />
+                  </button>
+                  <button
+                    onClick={navigateToNextRequest}
+                    disabled={!hasNextRequest()}
+                    className="text-gray-600 hover:text-gray-800 transition-colors p-2 hover:bg-gray-100 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-transparent"
+                    title="Next request (Right arrow)"
+                  >
+                    <ChevronRight className="w-5 h-5" />
+                  </button>
+                  <div className="w-px h-6 bg-gray-300 mx-1" />
+                  <button
+                    onClick={closeModal}
+                    className="text-gray-400 hover:text-gray-600 transition-colors p-2 hover:bg-gray-100 rounded-lg"
+                    title="Close (Escape)"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
               </div>
             </div>
             <div className="p-6 overflow-y-auto max-h-[calc(90vh-100px)]">
@@ -861,8 +928,8 @@ export default function Index() {
 
       {/* Conversation Detail Modal */}
       {isConversationModalOpen && selectedConversation && (
-        <div className="fixed inset-0 bg-gray-900/70 backdrop-blur-sm z-50 flex items-center justify-center p-6">
-          <div className="bg-white rounded-xl max-w-6xl w-full max-h-[90vh] overflow-hidden shadow-2xl">
+        <div className="fixed inset-0 bg-gray-900/70 backdrop-blur-sm z-50 flex items-center justify-center p-6" onClick={() => setIsConversationModalOpen(false)}>
+          <div className="bg-white rounded-xl max-w-6xl w-full max-h-[90vh] overflow-hidden shadow-2xl" onClick={(e) => e.stopPropagation()}>
             <div className="bg-gray-50 px-6 py-4 border-b border-gray-200">
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-3">
