@@ -124,215 +124,217 @@ export default function RequestDetailContent({ request, onGrade }: RequestDetail
   };
 
   return (
-    <div className="space-y-6">
-      {/* Request Overview */}
-      <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
-        <div className="flex items-center justify-between mb-4">
-          <h4 className="text-lg font-semibold text-gray-900 flex items-center space-x-3">
-            <Info className="w-5 h-5 text-blue-600" />
-            <span>Request Overview</span>
-          </h4>
-          {/* {!request.promptGrade && canGradeRequest(request) && (
-            <button 
-              onClick={onGrade}
-              className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center space-x-2"
-            >
-              <Target className="w-4 h-4" />
-              <span>Grade This Prompt</span>
-            </button>
-          )} */}
-        </div>
-        <div className="grid grid-cols-2 gap-6 text-sm">
-          <div className="space-y-3">
-            <div className="flex items-center space-x-3">
-              <span className="text-gray-500 font-medium min-w-[80px]">Method:</span>
-              <span className={`px-3 py-1.5 rounded-lg text-xs font-semibold uppercase tracking-wide ${getMethodColor(request.method)}`}>
-                {request.method}
-              </span>
-            </div>
-            <div className="flex items-center space-x-3">
-              <span className="text-gray-500 font-medium min-w-[80px]">Endpoint:</span>
-              <code className="text-blue-600 bg-blue-50 px-2 py-1 rounded font-mono text-xs border border-blue-200">
-                {getChatCompletionsEndpoint(request.routedModel, request.endpoint)}
-              </code>
-            </div>
-          </div>
-          <div className="space-y-3">
-            <div className="flex items-center space-x-3">
-              <span className="text-gray-500 font-medium min-w-[80px]">Timestamp:</span>
-              <span className="text-gray-900">{new Date(request.timestamp).toLocaleString()}</span>
-            </div>
-            <div className="flex items-center space-x-3">
-              <span className="text-gray-500 font-medium min-w-[80px]">User Agent:</span>
-              <span className="text-gray-600 text-xs">{request.headers['User-Agent']?.[0] || 'N/A'}</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Headers */}
-      <div className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
-        <div 
-          className="bg-gray-50 px-6 py-4 border-b border-gray-200 cursor-pointer"
-          onClick={() => toggleSection('headers')}
-        >
-          <div className="flex items-center justify-between">
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      {/* Left Column - Request Information */}
+      <div className="space-y-6">
+        {/* Request Overview */}
+        <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
+          <div className="flex items-center justify-between mb-4">
             <h4 className="text-lg font-semibold text-gray-900 flex items-center space-x-3">
-              <Settings className="w-5 h-5 text-blue-600" />
-              <span>Request Headers</span>
+              <Info className="w-5 h-5 text-blue-600" />
+              <span>Request Overview</span>
             </h4>
-            <ChevronDown className={`w-5 h-5 text-gray-500 transition-transform ${
-              expandedSections.headers ? 'rotate-180' : ''
-            }`} />
+            {/* {!request.promptGrade && canGradeRequest(request) && (
+              <button 
+                onClick={onGrade}
+                className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center space-x-2"
+              >
+                <Target className="w-4 h-4" />
+                <span>Grade This Prompt</span>
+              </button>
+            )} */}
+          </div>
+          <div className="grid grid-cols-2 gap-6 text-sm">
+            <div className="space-y-3">
+              <div className="flex items-center space-x-3">
+                <span className="text-gray-500 font-medium min-w-[80px]">Method:</span>
+                <span className={`px-3 py-1.5 rounded-lg text-xs font-semibold uppercase tracking-wide ${getMethodColor(request.method)}`}>
+                  {request.method}
+                </span>
+              </div>
+              <div className="flex items-center space-x-3">
+                <span className="text-gray-500 font-medium min-w-[80px]">Endpoint:</span>
+                <code className="text-blue-600 bg-blue-50 px-2 py-1 rounded font-mono text-xs border border-blue-200">
+                  {getChatCompletionsEndpoint(request.routedModel, request.endpoint)}
+                </code>
+              </div>
+            </div>
+            <div className="space-y-3">
+              <div className="flex items-center space-x-3">
+                <span className="text-gray-500 font-medium min-w-[80px]">Timestamp:</span>
+                <span className="text-gray-900">{new Date(request.timestamp).toLocaleString()}</span>
+              </div>
+              <div className="flex items-center space-x-3">
+                <span className="text-gray-500 font-medium min-w-[80px]">User Agent:</span>
+                <span className="text-gray-600 text-xs">{request.headers['User-Agent']?.[0] || 'N/A'}</span>
+              </div>
+            </div>
           </div>
         </div>
-        {expandedSections.headers && (
-          <div className="p-6">
-            <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-medium text-gray-700">Headers</span>
-                <button
-                  onClick={() => handleCopy(formatJSON(request.headers), 'headers')}
-                  className="p-1 text-gray-500 hover:text-gray-700 transition-colors"
-                  title="Copy headers"
-                >
-                  {copied.headers ? (
-                    <Check className="w-4 h-4 text-green-600" />
-                  ) : (
-                    <Copy className="w-4 h-4" />
-                  )}
-                </button>
-              </div>
-              <pre className="text-sm text-gray-700 overflow-x-auto">
-                {formatJSON(request.headers)}
-              </pre>
+
+        {/* Headers */}
+        <div className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
+          <div 
+            className="bg-gray-50 px-6 py-4 border-b border-gray-200 cursor-pointer"
+            onClick={() => toggleSection('headers')}
+          >
+            <div className="flex items-center justify-between">
+              <h4 className="text-lg font-semibold text-gray-900 flex items-center space-x-3">
+                <Settings className="w-5 h-5 text-blue-600" />
+                <span>Request Headers</span>
+              </h4>
+              <ChevronDown className={`w-5 h-5 text-gray-500 transition-transform ${
+                expandedSections.headers ? 'rotate-180' : ''
+              }`} />
             </div>
           </div>
-        )}
-      </div>
-
-      {request.body && (
-        <>
-          {/* System Messages */}
-          {request.body.system && (
-            <div className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
-              <div 
-                className="bg-gray-50 px-6 py-4 border-b border-gray-200 cursor-pointer"
-                onClick={() => toggleSection('system')}
-              >
-                <div className="flex items-center justify-between">
-                  <h4 className="text-lg font-semibold text-gray-900 flex items-center space-x-3">
-                    <Cpu className="w-5 h-5 text-yellow-600" />
-                    <span>System Instructions</span>
-                    <span className="text-xs bg-yellow-50 text-yellow-700 px-2 py-1 rounded-full border border-yellow-200">
-                      {request.body.system.length} items
-                    </span>
-                  </h4>
-                  <ChevronDown className={`w-5 h-5 text-gray-500 transition-transform ${
-                    expandedSections.system ? 'rotate-180' : ''
-                  }`} />
+          {expandedSections.headers && (
+            <div className="p-6">
+              <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm font-medium text-gray-700">Headers</span>
+                  <button
+                    onClick={() => handleCopy(formatJSON(request.headers), 'headers')}
+                    className="p-1 text-gray-500 hover:text-gray-700 transition-colors"
+                    title="Copy headers"
+                  >
+                    {copied.headers ? (
+                      <Check className="w-4 h-4 text-green-600" />
+                    ) : (
+                      <Copy className="w-4 h-4" />
+                    )}
+                  </button>
                 </div>
+                <pre className="text-sm text-gray-700 overflow-x-auto">
+                  {formatJSON(request.headers)}
+                </pre>
               </div>
-              {expandedSections.system && (
-                <div className="p-6 space-y-4">
-                  {request.body.system.map((sys, index) => (
-                    <div key={index} className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-                      <div className="flex items-center justify-between mb-3">
-                        <span className="text-yellow-700 font-medium text-sm">System Message #{index + 1}</span>
-                        {sys.cache_control && (
-                          <span className="text-xs bg-orange-100 text-orange-700 px-2 py-1 rounded-full border border-orange-200">
-                            Cache: {sys.cache_control.type}
-                          </span>
-                        )}
+            </div>
+          )}
+        </div>
+
+        {request.body && (
+          <>
+            {/* System Messages */}
+            {request.body.system && (
+              <div className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
+                <div 
+                  className="bg-gray-50 px-6 py-4 border-b border-gray-200 cursor-pointer"
+                  onClick={() => toggleSection('system')}
+                >
+                  <div className="flex items-center justify-between">
+                    <h4 className="text-lg font-semibold text-gray-900 flex items-center space-x-3">
+                      <Cpu className="w-5 h-5 text-yellow-600" />
+                      <span>System Instructions</span>
+                      <span className="text-xs bg-yellow-50 text-yellow-700 px-2 py-1 rounded-full border border-yellow-200">
+                        {request.body.system.length} items
+                      </span>
+                    </h4>
+                    <ChevronDown className={`w-5 h-5 text-gray-500 transition-transform ${
+                      expandedSections.system ? 'rotate-180' : ''
+                    }`} />
+                  </div>
+                </div>
+                {expandedSections.system && (
+                  <div className="p-6 space-y-4">
+                    {request.body.system.map((sys, index) => (
+                      <div key={index} className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                        <div className="flex items-center justify-between mb-3">
+                          <span className="text-yellow-700 font-medium text-sm">System Message #{index + 1}</span>
+                          {sys.cache_control && (
+                            <span className="text-xs bg-orange-100 text-orange-700 px-2 py-1 rounded-full border border-orange-200">
+                              Cache: {sys.cache_control.type}
+                            </span>
+                          )}
+                        </div>
+                        <div className="bg-white rounded p-3 border border-gray-200">
+                          <MessageContent content={{ type: 'text', text: sys.text }} />
+                        </div>
                       </div>
-                      <div className="bg-white rounded p-3 border border-gray-200">
-                        <MessageContent content={{ type: 'text', text: sys.text }} />
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          )}
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
 
-          {/* Tools */}
-          {request.body.tools && request.body.tools.length > 0 && (
+            {/* Tools */}
+            {request.body.tools && request.body.tools.length > 0 && (
+              <div className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
+                <div 
+                  className="bg-gray-50 px-6 py-4 border-b border-gray-200 cursor-pointer"
+                  onClick={() => toggleSection('tools')}
+                >
+                  <div className="flex items-center justify-between">
+                    <h4 className="text-lg font-semibold text-gray-900 flex items-center space-x-3">
+                      <Wrench className="w-5 h-5 text-indigo-600" />
+                      <span>Available Tools</span>
+                      <span className="text-xs bg-indigo-50 text-indigo-700 px-2 py-1 rounded-full border border-indigo-200">
+                        {request.body.tools.length} tools
+                      </span>
+                    </h4>
+                    <ChevronDown className={`w-5 h-5 text-gray-500 transition-transform ${
+                      expandedSections.tools ? 'rotate-180' : ''
+                    }`} />
+                  </div>
+                </div>
+                {expandedSections.tools && (
+                  <div className="p-6 space-y-4">
+                    {request.body.tools.map((tool, index) => (
+                      <ToolCard key={index} tool={tool} index={index} />
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Conversation */}
+            {request.body.messages && (
+              <div className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
+                <div 
+                  className="bg-gray-50 px-6 py-4 border-b border-gray-200 cursor-pointer"
+                  onClick={() => toggleSection('conversation')}
+                >
+                  <div className="flex items-center justify-between">
+                    <h4 className="text-lg font-semibold text-gray-900 flex items-center space-x-3">
+                      <MessageCircle className="w-5 h-5 text-blue-600" />
+                      <span>Conversation</span>
+                      <span className="text-xs bg-blue-50 text-blue-700 px-2 py-1 rounded-full border border-blue-200">
+                        {request.body.messages.length} messages
+                      </span>
+                    </h4>
+                    <ChevronDown className={`w-5 h-5 text-gray-500 transition-transform ${
+                      expandedSections.conversation ? 'rotate-180' : ''
+                    }`} />
+                  </div>
+                </div>
+                {expandedSections.conversation && (
+                  <div className="p-6 space-y-4">
+                    {request.body.messages.map((message, index) => (
+                      <MessageBubble key={index} message={message} index={index} />
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Model Configuration */}
             <div className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
               <div 
                 className="bg-gray-50 px-6 py-4 border-b border-gray-200 cursor-pointer"
-                onClick={() => toggleSection('tools')}
+                onClick={() => toggleSection('model')}
               >
                 <div className="flex items-center justify-between">
                   <h4 className="text-lg font-semibold text-gray-900 flex items-center space-x-3">
-                    <Wrench className="w-5 h-5 text-indigo-600" />
-                    <span>Available Tools</span>
-                    <span className="text-xs bg-indigo-50 text-indigo-700 px-2 py-1 rounded-full border border-indigo-200">
-                      {request.body.tools.length} tools
-                    </span>
+                    <Brain className="w-5 h-5 text-purple-600" />
+                    <span>Model Configuration</span>
                   </h4>
                   <ChevronDown className={`w-5 h-5 text-gray-500 transition-transform ${
-                    expandedSections.tools ? 'rotate-180' : ''
+                    expandedSections.model ? 'rotate-180' : ''
                   }`} />
                 </div>
               </div>
-              {expandedSections.tools && (
+              {expandedSections.model && (
                 <div className="p-6 space-y-4">
-                  {request.body.tools.map((tool, index) => (
-                    <ToolCard key={index} tool={tool} index={index} />
-                  ))}
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* Conversation */}
-          {request.body.messages && (
-            <div className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
-              <div 
-                className="bg-gray-50 px-6 py-4 border-b border-gray-200 cursor-pointer"
-                onClick={() => toggleSection('conversation')}
-              >
-                <div className="flex items-center justify-between">
-                  <h4 className="text-lg font-semibold text-gray-900 flex items-center space-x-3">
-                    <MessageCircle className="w-5 h-5 text-blue-600" />
-                    <span>Conversation</span>
-                    <span className="text-xs bg-blue-50 text-blue-700 px-2 py-1 rounded-full border border-blue-200">
-                      {request.body.messages.length} messages
-                    </span>
-                  </h4>
-                  <ChevronDown className={`w-5 h-5 text-gray-500 transition-transform ${
-                    expandedSections.conversation ? 'rotate-180' : ''
-                  }`} />
-                </div>
-              </div>
-              {expandedSections.conversation && (
-                <div className="p-6 space-y-4">
-                  {request.body.messages.map((message, index) => (
-                    <MessageBubble key={index} message={message} index={index} />
-                  ))}
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* Model Configuration */}
-          <div className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
-            <div 
-              className="bg-gray-50 px-6 py-4 border-b border-gray-200 cursor-pointer"
-              onClick={() => toggleSection('model')}
-            >
-              <div className="flex items-center justify-between">
-                <h4 className="text-lg font-semibold text-gray-900 flex items-center space-x-3">
-                  <Brain className="w-5 h-5 text-purple-600" />
-                  <span>Model Configuration</span>
-                </h4>
-                <ChevronDown className={`w-5 h-5 text-gray-500 transition-transform ${
-                  expandedSections.model ? 'rotate-180' : ''
-                }`} />
-              </div>
-            </div>
-            {expandedSections.model && (
-              <div className="p-6 space-y-4">
                 {/* Model Routing Information */}
                 {request.routedModel && request.routedModel !== request.originalModel && (
                   <div className="bg-gradient-to-r from-purple-50 to-blue-50 border border-purple-200 rounded-xl p-4">
@@ -394,19 +396,25 @@ export default function RequestDetailContent({ request, onGrade }: RequestDetail
                 </div>
               </div>
             )}
-          </div>
-        </>
-      )}
+            </div>
+          </>
+        )}
+      </div>
 
-      {/* API Response */}
-      {request.response && (
-        <ResponseDetails response={request.response} />
-      )}
+      {/* Right Column - Response Information */}
+      <div className="space-y-6">
+        <div className="sticky top-0 space-y-6">
+          {/* API Response */}
+          {request.response && (
+            <ResponseDetails response={request.response} />
+          )}
 
-      {/* Prompt Grading Results */}
-      {request.promptGrade && (
-        <PromptGradingResults promptGrade={request.promptGrade} />
-      )}
+          {/* Prompt Grading Results */}
+          {request.promptGrade && (
+            <PromptGradingResults promptGrade={request.promptGrade} />
+          )}
+        </div>
+      </div>
     </div>
   );
 }
