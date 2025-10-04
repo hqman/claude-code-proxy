@@ -618,106 +618,6 @@ function ResponseDetails({ response }: { response: NonNullable<Request['response
       
       {expandedSections.overview && (
         <div className="p-6 space-y-6">
-          {/* Response Overview */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-            <div className={`${statusColors.bg} border ${statusColors.border} rounded-lg p-4`}>
-              <div className="flex items-center space-x-2 mb-2">
-                <Activity className={`w-4 h-4 ${statusColors.icon}`} />
-                <span className={`text-xs font-medium ${statusColors.text}`}>Status</span>
-              </div>
-              <div className={`text-lg font-bold ${statusColors.text}`}>{response.statusCode}</div>
-              <div className={`text-xs ${statusColors.text} opacity-75`}>
-                {response.statusCode >= 200 && response.statusCode < 300 ? 'Success' :
-                 response.statusCode >= 400 && response.statusCode < 500 ? 'Client Error' :
-                 response.statusCode >= 500 ? 'Server Error' : 'Unknown'}
-              </div>
-            </div>
-            
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-              <div className="flex items-center space-x-2 mb-2">
-                <Clock className="w-4 h-4 text-blue-600" />
-                <span className="text-xs font-medium text-blue-700">Response Time</span>
-              </div>
-              <div className="text-lg font-bold text-blue-700">{response.responseTime}ms</div>
-              <div className="text-xs text-blue-700 opacity-75">
-                {response.responseTime < 1000 ? 'Fast' : response.responseTime < 3000 ? 'Normal' : 'Slow'}
-              </div>
-            </div>
-            
-            <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
-              <div className="flex items-center space-x-2 mb-2">
-                <Wifi className="w-4 h-4 text-purple-600" />
-                <span className="text-xs font-medium text-purple-700">Type</span>
-              </div>
-              <div className="text-lg font-bold text-purple-700">
-                {response.isStreaming ? 'Stream' : 'Single'}
-              </div>
-              <div className="text-xs text-purple-700 opacity-75">
-                {response.isStreaming ? 'Streaming' : 'Complete'}
-              </div>
-            </div>
-            
-            <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
-              <div className="flex items-center space-x-2 mb-2">
-                <Calendar className="w-4 h-4 text-gray-600" />
-                <span className="text-xs font-medium text-gray-700">Completed</span>
-              </div>
-              <div className="text-sm font-bold text-gray-700">{completedAt.split(' ')[1] || 'N/A'}</div>
-              <div className="text-xs text-gray-700 opacity-75">{completedAt.split(' ')[0] || ''}</div>
-            </div>
-          </div>
-
-          {/* Token Usage */}
-          {response.body?.usage && (
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-              <div className="bg-indigo-50 border border-indigo-200 rounded-lg p-4">
-                <div className="flex items-center space-x-2 mb-2">
-                  <Brain className="w-4 h-4 text-indigo-600" />
-                  <span className="text-xs font-medium text-indigo-700">Input Tokens</span>
-                </div>
-                <div className="text-lg font-bold text-indigo-700">
-                  {response.body.usage.input_tokens?.toLocaleString() || '0'}
-                </div>
-                <div className="text-xs text-indigo-700 opacity-75">Prompt</div>
-              </div>
-              
-              <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-4">
-                <div className="flex items-center space-x-2 mb-2">
-                  <MessageCircle className="w-4 h-4 text-emerald-600" />
-                  <span className="text-xs font-medium text-emerald-700">Output Tokens</span>
-                </div>
-                <div className="text-lg font-bold text-emerald-700">
-                  {response.body.usage.output_tokens?.toLocaleString() || '0'}
-                </div>
-                <div className="text-xs text-emerald-700 opacity-75">Response</div>
-              </div>
-              
-              <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
-                <div className="flex items-center space-x-2 mb-2">
-                  <Cpu className="w-4 h-4 text-amber-600" />
-                  <span className="text-xs font-medium text-amber-700">Total Tokens</span>
-                </div>
-                <div className="text-lg font-bold text-amber-700">
-                  {((response.body.usage.input_tokens || 0) + (response.body.usage.output_tokens || 0)).toLocaleString()}
-                </div>
-                <div className="text-xs text-amber-700 opacity-75">Combined</div>
-              </div>
-              
-              {response.body.usage.cache_read_input_tokens && (
-                <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-                  <div className="flex items-center space-x-2 mb-2">
-                    <Bot className="w-4 h-4 text-green-600" />
-                    <span className="text-xs font-medium text-green-700">Cached Tokens</span>
-                  </div>
-                  <div className="text-lg font-bold text-green-700">
-                    {response.body.usage.cache_read_input_tokens.toLocaleString()}
-                  </div>
-                  <div className="text-xs text-green-700 opacity-75">From Cache</div>
-                </div>
-              )}
-            </div>
-          )}
-
           {/* Response Headers */}
           {response.headers && (
             <div className="bg-gray-50 border border-gray-200 rounded-xl overflow-hidden">
@@ -921,6 +821,106 @@ function ResponseDetails({ response }: { response: NonNullable<Request['response
               </div>
             );
           })()}
+
+          {/* Token Usage */}
+          {response.body?.usage && (
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className="bg-indigo-50 border border-indigo-200 rounded-lg p-4">
+                <div className="flex items-center space-x-2 mb-2">
+                  <Brain className="w-4 h-4 text-indigo-600" />
+                  <span className="text-xs font-medium text-indigo-700">Input Tokens</span>
+                </div>
+                <div className="text-lg font-bold text-indigo-700">
+                  {response.body.usage.input_tokens?.toLocaleString() || '0'}
+                </div>
+                <div className="text-xs text-indigo-700 opacity-75">Prompt</div>
+              </div>
+              
+              <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-4">
+                <div className="flex items-center space-x-2 mb-2">
+                  <MessageCircle className="w-4 h-4 text-emerald-600" />
+                  <span className="text-xs font-medium text-emerald-700">Output Tokens</span>
+                </div>
+                <div className="text-lg font-bold text-emerald-700">
+                  {response.body.usage.output_tokens?.toLocaleString() || '0'}
+                </div>
+                <div className="text-xs text-emerald-700 opacity-75">Response</div>
+              </div>
+              
+              <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
+                <div className="flex items-center space-x-2 mb-2">
+                  <Cpu className="w-4 h-4 text-amber-600" />
+                  <span className="text-xs font-medium text-amber-700">Total Tokens</span>
+                </div>
+                <div className="text-lg font-bold text-amber-700">
+                  {((response.body.usage.input_tokens || 0) + (response.body.usage.output_tokens || 0)).toLocaleString()}
+                </div>
+                <div className="text-xs text-amber-700 opacity-75">Combined</div>
+              </div>
+              
+              {response.body.usage.cache_read_input_tokens && (
+                <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                  <div className="flex items-center space-x-2 mb-2">
+                    <Bot className="w-4 h-4 text-green-600" />
+                    <span className="text-xs font-medium text-green-700">Cached Tokens</span>
+                  </div>
+                  <div className="text-lg font-bold text-green-700">
+                    {response.body.usage.cache_read_input_tokens.toLocaleString()}
+                  </div>
+                  <div className="text-xs text-green-700 opacity-75">From Cache</div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Response Overview */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className={`${statusColors.bg} border ${statusColors.border} rounded-lg p-4`}>
+              <div className="flex items-center space-x-2 mb-2">
+                <Activity className={`w-4 h-4 ${statusColors.icon}`} />
+                <span className={`text-xs font-medium ${statusColors.text}`}>Status</span>
+              </div>
+              <div className={`text-lg font-bold ${statusColors.text}`}>{response.statusCode}</div>
+              <div className={`text-xs ${statusColors.text} opacity-75`}>
+                {response.statusCode >= 200 && response.statusCode < 300 ? 'Success' :
+                 response.statusCode >= 400 && response.statusCode < 500 ? 'Client Error' :
+                 response.statusCode >= 500 ? 'Server Error' : 'Unknown'}
+              </div>
+            </div>
+            
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+              <div className="flex items-center space-x-2 mb-2">
+                <Clock className="w-4 h-4 text-blue-600" />
+                <span className="text-xs font-medium text-blue-700">Response Time</span>
+              </div>
+              <div className="text-lg font-bold text-blue-700">{response.responseTime}ms</div>
+              <div className="text-xs text-blue-700 opacity-75">
+                {response.responseTime < 1000 ? 'Fast' : response.responseTime < 3000 ? 'Normal' : 'Slow'}
+              </div>
+            </div>
+            
+            <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
+              <div className="flex items-center space-x-2 mb-2">
+                <Wifi className="w-4 h-4 text-purple-600" />
+                <span className="text-xs font-medium text-purple-700">Type</span>
+              </div>
+              <div className="text-lg font-bold text-purple-700">
+                {response.isStreaming ? 'Stream' : 'Single'}
+              </div>
+              <div className="text-xs text-purple-700 opacity-75">
+                {response.isStreaming ? 'Streaming' : 'Complete'}
+              </div>
+            </div>
+            
+            <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+              <div className="flex items-center space-x-2 mb-2">
+                <Calendar className="w-4 h-4 text-gray-600" />
+                <span className="text-xs font-medium text-gray-700">Completed</span>
+              </div>
+              <div className="text-sm font-bold text-gray-700">{completedAt.split(' ')[1] || 'N/A'}</div>
+              <div className="text-xs text-gray-700 opacity-75">{completedAt.split(' ')[0] || ''}</div>
+            </div>
+          </div>
         </div>
       )}
     </div>
