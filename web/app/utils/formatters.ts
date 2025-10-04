@@ -21,10 +21,10 @@ export function formatValue(value: any): string {
 /**
  * Formats JSON with proper indentation and returns a formatted string
  */
-export function formatJSON(obj: any, maxLength: number = 1000): string {
+export function formatJSON(obj: any, maxLength?: number): string {
   try {
     const jsonString = JSON.stringify(obj, null, 2);
-    if (jsonString.length > maxLength) {
+    if (maxLength && jsonString.length > maxLength) {
       return jsonString.substring(0, maxLength) + '...';
     }
     return jsonString;

@@ -306,7 +306,7 @@ export default function RequestDetailContent({ request, onGrade }: RequestDetail
                 </div>
               </div>
               {expandedSections.conversation && (
-                <div className="p-6 space-y-4 max-h-[600px] overflow-y-auto">
+                <div className="p-6 space-y-4">
                   {request.body.messages.map((message, index) => (
                     <MessageBubble key={index} message={message} index={index} />
                   ))}
@@ -796,7 +796,7 @@ function ResponseDetails({ response }: { response: NonNullable<Request['response
                         )}
                       </button>
                     </div>
-                    <pre className="text-xs text-gray-700 overflow-x-auto max-h-96 overflow-y-auto">
+                    <pre className="text-xs text-gray-700 overflow-x-auto">
                       {response.body ? formatJSON(response.body) : response.bodyText}
                     </pre>
                   </div>
@@ -895,7 +895,7 @@ function ResponseDetails({ response }: { response: NonNullable<Request['response
                               )}
                             </button>
                           </div>
-                          <pre className="text-xs text-gray-600 overflow-x-auto max-h-64 overflow-y-auto bg-gray-100 rounded p-2 font-mono">
+                          <pre className="text-xs text-gray-600 overflow-x-auto bg-gray-100 rounded p-2 font-mono">
                             {parsed.rawData}
                           </pre>
                         </div>
