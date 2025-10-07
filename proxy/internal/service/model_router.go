@@ -102,6 +102,7 @@ func initializeModelProviderMap() map[string]string {
 		"claude-opus-4-1-20250805",
 		"claude-opus-4-20250514",
 		"claude-sonnet-4-20250514",
+		"claude-sonnet-4-5-20250929",
 		"claude-3-7-sonnet-20250219",
 		"claude-3-5-haiku-20241022",
 	}
@@ -265,6 +266,19 @@ func (r *ModelRouter) hashString(s string) string {
 func (r *ModelRouter) getProviderNameForModel(model string) string {
 	if provider, exists := r.modelProviderMap[model]; exists {
 		return provider
+	}
+
+	lowerModel := strings.ToLower(model)
+
+	switch {
+	case strings.HasPrefix(lowerModel, "claude-"):
+		return "anthropic"
+	case strings.HasPrefix(lowerModel, "gpt-"):
+		return "openai"
+	case strings.HasPrefix(lowerModel, "o1"):
+		return "openai"
+	case strings.HasPrefix(lowerModel, "o3"):
+		return "openai"
 	}
 
 	// Default to anthropic

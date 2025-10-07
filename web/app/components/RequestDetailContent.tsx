@@ -593,6 +593,18 @@ function ResponseDetails({ response }: { response: NonNullable<Request['response
     };
   };
 
+  // Extract tool names from response content
+  const extractToolNames = (responseBody: any): string[] => {
+    if (!responseBody?.content || !Array.isArray(responseBody.content)) {
+      return [];
+    }
+    
+    return responseBody.content
+      .filter((item: any) => item.type === 'tool_use')
+      .map((item: any) => item.name)
+      .filter(Boolean);
+  };
+
   const statusColors = getStatusColor(response.statusCode);
   const completedAt = response.completedAt ? new Date(response.completedAt).toLocaleString() : 'Unknown';
 
@@ -712,6 +724,36 @@ function ResponseDetails({ response }: { response: NonNullable<Request['response
               )}
             </div>
           )}
+
+          {/* Tools Used */}
+          {(() => {
+            const toolNames = extractToolNames(response.body);
+            return toolNames.length > 0 && (
+              <div className="bg-gray-50 border border-gray-200 rounded-xl overflow-hidden">
+                <div className="px-4 py-3 border-b border-gray-200">
+                  <h5 className="text-sm font-semibold text-gray-900 flex items-center space-x-2">
+                    <Wrench className="w-4 h-4 text-indigo-600" />
+                    <span>Tools</span>
+                    <span className="text-xs bg-indigo-100 text-indigo-700 px-2 py-1 rounded-full border border-indigo-200">
+                      {toolNames.length}
+                    </span>
+                  </h5>
+                </div>
+                <div className="px-4 py-3">
+                  <div className="flex flex-wrap gap-2">
+                    {toolNames.map((name, index) => (
+                      <span 
+                        key={index}
+                        className="inline-flex items-center px-3 py-1.5 bg-indigo-50 text-indigo-700 text-sm rounded-lg border border-indigo-200 font-medium"
+                      >
+                        {name}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            );
+          })()}
 
           {/* Streaming Response */}
           {response.isStreaming && response.streamingChunks && response.streamingChunks.length > 0 && (() => {
@@ -942,64 +984,37 @@ function ToolCard({ tool, index }: { tool: any; index: number }) {
     }
   };
 
-  // Parse description to identify code blocks and format them
-  const formatDescription = (description: string) => {
-    // Split by code blocks (text between backticks)
-    const parts = description.split(/(`[^`]+`)/g);
-    
-    return parts.map((part, i) => {
-      if (part.startsWith('`') && part.endsWith('`')) {
-        // Code inline
-        const code = part.slice(1, -1);
-        return (
-          <code key={i} className="bg-gray-100 text-gray-800 px-1.5 py-0.5 rounded text-xs font-mono">
-            {code}
-          </code>
-        );
-      }
-      
-      // Return non-code parts as plain text
-      return <span key={i}>{part}</span>;
-    });
-  };
-
-  const isLongDescription = tool.description.length > 300;
-  const displayDescription = expanded ? tool.description : tool.description.slice(0, 300);
-
   return (
     <div className="bg-gray-50 border border-gray-200 rounded-xl overflow-hidden">
-      <div className="p-5">
-        <div className="flex items-start justify-between mb-4">
+      <div 
+        className="p-4 cursor-pointer hover:bg-gray-100 transition-colors"
+        onClick={() => setExpanded(!expanded)}
+      >
+        <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center border border-gray-200 shadow-sm">
-              <Wrench className="w-5 h-5 text-gray-600" />
+            <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center border border-gray-200 shadow-sm">
+              <Wrench className="w-4 h-4 text-gray-600" />
             </div>
             <div>
-              <h5 className="text-lg font-bold text-gray-900">{tool.name}</h5>
+              <h5 className="text-base font-bold text-gray-900">{tool.name}</h5>
               <span className="text-xs text-gray-500">Tool #{index + 1}</span>
             </div>
           </div>
+          <ChevronDown className={`w-5 h-5 text-gray-500 transition-transform ${
+            expanded ? 'rotate-180' : ''
+          }`} />
         </div>
-        
-        <div className="prose prose-sm max-w-none">
-          <div className="text-sm text-gray-700 leading-relaxed space-y-2">
-            <div className="whitespace-pre-wrap">
-              {formatDescription(displayDescription)}
-              {isLongDescription && !expanded && '...'}
+      </div>
+      
+      {expanded && (
+        <div className="px-5 pb-5 pt-2 border-t border-gray-200">
+          <div className="prose prose-sm max-w-none mb-4">
+            <div className="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">
+              {tool.description}
             </div>
-            {isLongDescription && (
-              <button
-                onClick={() => setExpanded(!expanded)}
-                className="text-blue-600 hover:text-blue-700 text-xs font-medium mt-2"
-              >
-                {expanded ? 'Show less' : 'Show more'}
-              </button>
-            )}
           </div>
-        </div>
-        
-        {tool.input_schema && (
-          <div className="mt-4">
+          
+          {tool.input_schema && (
             <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
               <div className="bg-gray-50 px-4 py-2 border-b border-gray-200 flex items-center justify-between">
                 <span className="text-xs font-semibold text-gray-700 flex items-center space-x-2">
@@ -1007,7 +1022,10 @@ function ToolCard({ tool, index }: { tool: any; index: number }) {
                   <span>Input Schema</span>
                 </span>
                 <button
-                  onClick={handleCopySchema}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleCopySchema();
+                  }}
                   className="p-1 text-gray-500 hover:text-gray-700 transition-colors"
                   title="Copy schema"
                 >
@@ -1024,9 +1042,9 @@ function ToolCard({ tool, index }: { tool: any; index: number }) {
                 </pre>
               </div>
             </div>
-          </div>
-        )}
-      </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }
