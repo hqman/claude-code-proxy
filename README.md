@@ -34,7 +34,7 @@ Claude Code Proxy serves three main purposes:
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/seifghazi/claude-code-proxy.git
+   git clone https://github.com/hqman/claude-code-proxy.git
    cd claude-code-proxy
    ```
 
@@ -60,7 +60,7 @@ Claude Code Proxy serves three main purposes:
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/seifghazi/claude-code-proxy.git
+   git clone https://github.com/hqman/claude-code-proxy.git
    cd claude-code-proxy
    ```
 
@@ -74,7 +74,7 @@ Claude Code Proxy serves three main purposes:
    ```bash
    # Build the image
    docker build -t claude-code-proxy .
-   
+
    # Run with default settings
    docker run -p 3001:3001 -p 5173:5173 claude-code-proxy
    ```
@@ -83,13 +83,13 @@ Claude Code Proxy serves three main purposes:
    ```bash
    # Create a data directory for persistent SQLite database
    mkdir -p ./data
-   
+
    # Option 1: Run with config file (recommended)
    docker run -p 3001:3001 -p 5173:5173 \
      -v ./data:/app/data \
      -v ./config.yaml:/app/config.yaml:ro \
      claude-code-proxy
-   
+
    # Option 2: Run with environment variables
    docker run -p 3001:3001 -p 5173:5173 \
      -v ./data:/app/data \
@@ -118,7 +118,7 @@ Claude Code Proxy serves three main purposes:
          - WEB_PORT=5173
          - DB_PATH=/app/data/requests.db
    ```
-   
+
    Then run: `docker-compose up`
 
 ### Using with Claude Code
@@ -174,7 +174,7 @@ server:
 providers:
   anthropic:
     base_url: "https://api.anthropic.com"
-    
+
   openai: # if enabling subagent routing
     api_key: "your-openai-key"  # Or set OPENAI_API_KEY env var
 
@@ -215,7 +215,7 @@ subagents:
 ```
 Use case: Route code review tasks to GPT-4o for faster responses while keeping complex coding tasks on Claude.
 
-**Example 2: Reasoning Agent → O3**  
+**Example 2: Reasoning Agent → O3**
 ```yaml
 # config.yaml
 subagents:
